@@ -1,39 +1,46 @@
 import random
 
-# Define the list of words to choose from
-WORDS = ['apple', 'banana', 'cherry', 'orange', 'pear']
+def generate_word():
+    words = ["apple", "banana", "cherry", "orange", "pear", "grape", "kiwi", "mango", "papaya", "pineapple"]
+    return random.choice(words)
 
-# Choose a random word from the list
-target_word = random.choice(WORDS)
-
-# Define the number of guesses the player has
-max_guesses = 6
-
-# Define a list to keep track of the letters the player has guessed
-guessed_letters = []
-
-# Define a function to print the current state of the game
-def print_game_state():
-    print(' '.join([letter if letter in guessed_letters else '_' for letter in target_word]))
-
-# Play the game
-print('Welcome to Wordle! Guess the word in', max_guesses, 'tries or less.')
-while max_guesses > 0:
-    print('You have', max_guesses, 'guesses left.')
-    print_game_state()
-    guess = input('Guess a letter: ').lower()
-    if guess in guessed_letters:
-        print('You already guessed that letter.')
-    else:
-        guessed_letters.append(guess)
-        if guess in target_word:
-            print('Good guess!')
-            if all([letter in guessed_letters for letter in target_word]):
-                print_game_state()
-                print('Congratulations, you win!')
-                break
+def get_guess():
+    while True:
+        guess = input("Guess a 5-letter word: ")
+        if len(guess) != 5:
+            print("Invalid guess. Please enter a 5-letter word.")
         else:
-            print('Oops, that letter is not in the word.')
-            max_guesses -= 1
-else:
-    print('Sorry, you lose. The word was', target_word)
+            return guess
+
+def evaluate_guess(guess, target_word, attempts):
+    if guess == target_word:
+        print("Congratulations! You guessed the word!")
+        return True
+    else:
+        matched = 0
+        matched_letters = []
+        for i in range(5):
+            if guess[i] == target_word[i]:
+                matched += 1
+                matched_letters.append(guess[i])
+        guesses_left = 5 - (attempts + 1)
+        if matched != 0:
+            print(f"Sorry, that's not the word. {matched} letters match: {' '.join(matched_letters)}. You have {guesses_left} guesses left.")
+        else:
+            print(f"Sorry, that's not the word. None of the letters match. You have {guesses_left} guesses left.")
+        return False
+
+def play_game():
+    target_word = generate_word()
+    attempts = 0
+    while attempts < 5:
+        guess = get_guess()
+        if evaluate_guess(guess, target_word, attempts):
+            break
+        attempts += 1
+        guesses_left = 5 - attempts
+        print(f"You have {guesses_left} guesses left.")
+    else:
+        print(f"Sorry, you didn't guess the word. The word was {target_word}.")
+
+play_game()
